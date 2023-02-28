@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "ContractReader.io Chrome Extension",
+  "version": "0.0.1",
+  "description": "Adds buttons to certain sites to help users get to ContractReader.io",
+  "web_accessible_resources": [
+    {
+        "resources": ["/images/favicon.png"],
+        "matches": ["https://*/*"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://etherscan.io/*",
+        "https://opensea.io/collection/*",
+        "https://blur.io/collection/*"
+      ],
+      "js": ["bundle.js"]
+    }
+  ]
+}
