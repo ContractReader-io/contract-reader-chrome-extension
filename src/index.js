@@ -1,86 +1,79 @@
-const eth_regex = /0x[a-fA-F0-9]{40}/;
+// const { createPublicClient, http, getAddress } = require("viem");
+// const { normalize } = require('viem/ens');
+// const { mainnet } = require('viem/chains');
+const ethers = require('ethers');
 
-function onReady(yourMethod) {
-  var readyStateCheckInterval = setInterval(function() {
-    if (document && document.readyState === 'complete') {
-      clearInterval(readyStateCheckInterval);
-      yourMethod();
-    }
-  }, 10);
+const provider = ethers.getDefaultProvider();
+
+// const publicClient = createPublicClient({
+//   chain: mainnet,
+//   transport: http(),
+// })
+
+// const resolverAddress = async (address) => await publicClient.getEnsResolver({
+//     name: address,
+//   })
+
+const createEnsButton = (address) => {
+  const ensButton = document.createElement('a');
+  ensButton.href = `https://etherscan.io/address/${address}`;
+  ensButton.target = "_blank";
+  ensButton.className = 'badge bg-white hover:bg-secondary text-dark text-nowrap fw-medium transition-all rounded-pill py-1.5 px-2';
+  ensButton.style.border = '1px solid #D9D9D9';
+  return ensButton;
 }
 
-if (location.href.includes("etherscan.io/")) {
-  const address = location.href.match(eth_regex)[0];
-  const newButton = document.createElement('a');
+const createImage = () => {
+  const image = document.createElement('img');
+  image.src = chrome.runtime.getURL("images/ens-new.svg");
+  image.style.width = '13px';
+  image.style.marginRight = '4px';
+  return image;
+}
 
-  newButton.style.color = 'white';
-  newButton.style.border = 'none';
-  newButton.style.borderRadius = '0.5rem';
-  newButton.style.fontWeight = '500';
-  newButton.style.fontSize = '0.78515625rem';
-  newButton.style.padding = '0.3rem 0.6rem';
+const createSpan = (ensAddress) => {
+  const span = document.createElement('span');
+  span.innerText = ensAddress;
+  span.style.padding = '4px 0';
+  span.style.display = 'inline-block';
+  return span;
+}
 
-  const nav_tabs = document.getElementById("nav_tabs")
+if (location.href.includes("basescan.org/tx/")) {
+  const row = document.getElementsByClassName('row align-items-center')[6];
+  const addressDiv = row.children[1];
+  const address = addressDiv.innerText.trim();
 
-  for(var i = 0; i < nav_tabs.children.length; i++) {
-    if (nav_tabs.children[i].innerText === "Contract") {
-      if (nav_tabs.children[i].children[0].childElementCount == 0) {
-        newButton.innerText = "Warning: Contract Not Verified";
-        newButton.style.backgroundImage = 'linear-gradient(to bottom right, #ff6f61, #e82c0c)';
+  provider.lookupAddress(address).then(ensAddress => {
+    if (ensAddress === '0x0000000000000000000000000000000000000000') return;
 
-        nav_tabs.appendChild(newButton);
+    const ensButton = createEnsButton(address);
 
-      } else if (nav_tabs.children[i].children[0].childElementCount == 1) { // Has verified check
-          newButton.href = `https://contractreader.io/contract/${address}`;
-          newButton.innerText = "View on ContractReader";
-          newButton.style.cursor = 'pointer';
-          newButton.style.backgroundImage = 'linear-gradient(to bottom,#a78bfa,#e879f9)';
+    const referenceElement = addressDiv.children[1];
+    addressDiv.insertBefore(ensButton, referenceElement.nextSibling);
 
-          nav_tabs.appendChild(newButton);
-      }
-    }
-  }
+    ensButton.appendChild(createImage());
+    ensButton.appendChild(createSpan(ensAddress));
+  });
+} else if (location.href.includes('basescan.org/address/')) {
+  const targetDiv = document.getElementsByClassName('row mb-4')[0];
 
-} else if (location.href.includes("opensea.io/collection/")) {
-  const elements = document.getElementsByClassName("fresnel-container")[13];
-  const element_set = elements.children[0].children[0]
-  const first_element = element_set.children[0]
-  const _class = first_element.classList.value
+  const match = location.href.match(/address\/(0x[a-fA-F0-9]{40})/);
+  const address = match ? match[1] : null;
 
-  if (first_element.href.includes("etherscan.io")) {
-    const address = first_element.href.match(eth_regex)
+  if (!address) return;
 
-    const newButton = document.createElement('a');
-    newButton.href = `https://contractreader.io/contract/${address}`;
-    newButton.className = _class
-    const img_url = chrome.runtime.getURL("images/favicon.png")
-    console.log('img', img_url)
-    newButton.style.backgroundImage = `url("${img_url}")`;
-    newButton.style.backgroundSize = '20px';
-    newButton.style.width = '20px';
-    newButton.style.height = '20px';
-    newButton.style.marginTop = '14px';
-    newButton.style.marginRight = '15px';
+  provider.lookupAddress(address).then(ensAddress => {
+    if (ensAddress === '0x0000000000000000000000000000000000000000') return;
 
-    element_set.prepend(newButton)
-  }
+    const ensButton = createEnsButton(address);
+    ensButton.style.marginBottom = '10px';
 
-} else if (location.href.includes('https://blur.io/collection/')) {
-    onReady(function() {
-      const marketplaces_etc = Array(document.getElementById("OVERLINE").children[0].children[0].children[2].children[0].children)
+    const parentElement = targetDiv.parentElement;
+    parentElement.insertBefore(ensButton, targetDiv);
 
-      const button_holder = Array(document.getElementById("OVERLINE").children[0].children[0].children[2].children[0])
-      const _class = button_holder[0].classList.value
-      const address = marketplaces_etc[0][3].href.match(eth_regex)[0]
+    ensButton.appendChild(createImage());
+    ensButton.appendChild(createSpan(ensAddress));
+  });
 
-      const newButton = document.createElement('a');
-      newButton.href = `https://contractreader.io/contract/${address}`;
-      const img_url = chrome.runtime.getURL("images/favicon.png")
-      newButton.style.backgroundImage = `url("${img_url}")`;
-      newButton.style.backgroundSize = '21px';
-      newButton.style.width = '21px';
-      newButton.style.height = '21px';
-
-      document.getElementsByClassName(_class)[0].appendChild(newButton)
-    });
 }

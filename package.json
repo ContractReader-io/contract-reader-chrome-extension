@@ -1,12 +1,21 @@
 {
-  "name": "cr-chrome-extension",
+  "name": "base-ens-chrome-extension",
   "version": "1.0.0",
-  "description": "",
+  "description": "TODO",
   "main": "index.js",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "@backseats_eth",
+  "license": "MIT",
+  "directories": {
+    "lib": "lib"
+  },
   "dependencies": {
-    "browserify": "^17.0.0"
+    "ethers": "^6.7.1",
+    "viem": "~1.6.7"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
   }
 }
