@@ -1,20 +1,22 @@
 {
   "manifest_version": 3,
-  "name": "ContractReader.io's ENS Support for Base Chrome Extension",
+  "name": "ContractReader.io Chrome Extension",
   "version": "0.0.1",
-  "description": "Adds Mainnet ENS names to Basescan",
+  "description": "Adds buttons to certain sites to help users get to ContractReader.io",
   "web_accessible_resources": [
     {
-        "resources": ["/images/favicon.png", "/images/ens-new.svg"],
+        "resources": ["/images/favicon.png"],
         "matches": ["https://*/*"]
     }
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://basescan.org/*"
+        "https://etherscan.io/*",
+        "https://opensea.io/collection/*",
+        "https://blur.io/collection/*"
       ],
-      "js": ["dist/bundle.js"]
+      "js": ["bundle.js"]
     }
   ]
 }
