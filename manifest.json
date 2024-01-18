@@ -1,18 +1,45 @@
 {
   "manifest_version": 3,
   "name": "ContractReader.io Chrome Extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Adds buttons to certain sites to help users get to ContractReader.io",
+  "permissions": [
+    "tabs", "activeTab", "background"
+  ],
   "web_accessible_resources": [
     {
         "resources": ["/images/favicon.png"],
         "matches": ["https://*/*"]
     }
   ],
+  "icons": {
+    "16": "images/cr-grey16.png",
+    "48": "images/cr-grey48.png",
+    "128": "images/cr-grey128.png"
+  },
+  "action": {},
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "host_permissions": [
+    "*://*.etherscan.io/*",
+    "*://*.basescan.org/*",
+    "*://*.polygonscan.com/*",
+    "*://*.arbiscan.io/*",
+    "*://*.bscscan.org/*"
+  ],
   "content_scripts": [
     {
       "matches": [
         "https://etherscan.io/*",
+        "https://goerli.etherscan.io/*",
+        "https://sepolia.etherscan.io/*",
+        "https://optimistic.etherscan.io/*",
+        "https://basescan.org/*",
+        "https://polygonscan.com/*",
+        "https://arbiscan.io/*",
+        "https://bscscan.com/*",
         "https://opensea.io/collection/*",
         "https://blur.io/collection/*"
       ],
